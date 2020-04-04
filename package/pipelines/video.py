@@ -123,8 +123,8 @@ class YouGet(VideoDownloader):
 class VideosPipeline(FilesPipeline):
 
     downloaders = {
-        'youtube_dl': YoutubeDL,
-        'you_get': YouGet
+        'youtube-dl': YoutubeDL,
+        'you-get': YouGet
     }
 
     def __init__(self, store_uri, download_func=None, settings=None):
