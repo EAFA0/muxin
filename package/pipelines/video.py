@@ -129,10 +129,10 @@ class VideosPipeline(FilesPipeline):
 
     def __init__(self, store_uri, download_func=None, settings=None):
         self.videos_urls_field = settings.get(
-            'VIDEOS_URLS_FIELD', 'videos_urls'
+            'VIDEOS_URLS_FIELD', 'video_url'
         )
         self.videos_result_field = settings.get(
-            'VIDEOS_RESULT_FIELD', 'videos'
+            'VIDEOS_RESULT_FIELD', 'video'
         )
 
         super().__init__(store_uri,
