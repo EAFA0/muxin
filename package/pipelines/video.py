@@ -3,8 +3,8 @@ import shutil
 from hashlib import md5
 from pathlib import Path
 
-import you_get
 import youtube_dl
+from you_get import common as you_get
 
 from scrapy import Spider
 from scrapy.http import Request, Response
@@ -112,9 +112,9 @@ class YouGet(VideoDownloader):
         filename = id_from_url(download_url)
         if list(self.cache_dir.glob(f"{filename}.*")) == []:
             # you_get 特有的设置输出文件方式 =.=
-            common.output_filename = filename
-            you_get.common.download_main(
-                you_get.common.any_download, None,
+            you_get.output_filename = filename
+            you_get.download_main(
+                you_get.any_download, None,
                 [download_url], None, **download_opts)
 
         return self.complete_absolute_path(self.cache_dir, filename)
