@@ -64,7 +64,7 @@ class VideoDownloader:
         return response
 
     @classmethod
-    def complete_absolute_path(self, path: Path, filename: str, ext: str = ''):
+    def complete_absolute_path(cls, path: Path, filename: str, ext: str = ''):
         '''
         base on pathlib.Path.glob
 
