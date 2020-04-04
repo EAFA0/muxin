@@ -128,11 +128,11 @@ class VideosPipeline(FilesPipeline):
     }
 
     def __init__(self, store_uri, download_func=None, settings=None):
-        self.videos_urls_field = settings.get(
-            'VIDEOS_URLS_FIELD', 'video_url'
+        self.video_url_field = settings.get(
+            'VIDEO_URL_FIELD', 'video_url'
         )
-        self.videos_result_field = settings.get(
-            'VIDEOS_RESULT_FIELD', 'video'
+        self.video_result_field = settings.get(
+            'VIDEO_RESULT_FIELD', 'video'
         )
 
         super().__init__(store_uri,
@@ -223,11 +223,11 @@ class VideosPipeline(FilesPipeline):
     def get_media_requests(self, item, info):
         meta = item['meta'] if 'meta' in item else {}
 
-        item_urls = item[self.videos_urls_field]
-        for item_url in item_urls:
-            yield Request(item_url, meta=meta)
+        video_url = item[self.video_url_field]
+        yield Request(video_url, meta=meta)
 
     def item_completed(self, results, item, info):
-        if isinstance(item, dict) or self.videos_result_field in item.fields:
-            item[self.videos_result_field] = [x for ok, x in results if ok]
+        if isinstance(item, dict) or self.video_result_field in item.fields:
+            ok, result = results[0]
+            item[self.video_result_field] = result if ok else None
         return item
