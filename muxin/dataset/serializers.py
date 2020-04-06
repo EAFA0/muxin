@@ -9,15 +9,15 @@ class DataSetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DataSet
-        fields = ['id', 'name', 'type', 'create', 'modify', 'creator']
+        fields = ['id', 'name', 'type', 'create', 'modify']
 
 
 class ImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Image
-        fields = ['md5', 'path', 'size', 'width',
-                  'store', 'marker', 'height', 'dataset']
+        fields = ['md5', 'path', 'size', 'time',
+                  'width', 'height', 'marker', 'dataset']
 
 
 class VideoSerializer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class VideoSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Video
-        fields = ['sid', 'path', 'size', 'store', 'marker', 'dataset']
+        fields = ['sid', 'path', 'size', 'time', 'marker', 'dataset']
 
 
 class ImageLabelSerializer(serializers.ModelSerializer):

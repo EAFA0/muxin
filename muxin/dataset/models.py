@@ -8,11 +8,10 @@ __all__ = ['DataSet', 'Image', 'Video',
 class DataSet(models.Model):
 
     type = models.CharField(max_length=1)
-    name = models.CharField(max_length=64)
+    name = models.CharField(max_length=64, db_index=True)
 
     create = models.DateTimeField(auto_now_add=True)
     modify = models.DateTimeField(auto_now=True)
-    creator = models.CharField(max_length=64)
 
 
 class Image(models.Model):
@@ -21,18 +20,19 @@ class Image(models.Model):
 
     path = models.FileField()
     size = models.IntegerField()
+    time = models.DateTimeField(auto_now=True)
+
     width = models.IntegerField()
-    store = models.DateTimeField(auto_now=True)
+    height = models.IntegerField()
 
     marker = models.FileField()
-    height = models.IntegerField()
-    dataset = models.CharField(max_length=64)
+    dataset = models.CharField(max_length=64, db_index=True)
 
 
 class ImageLabel(models.Model):
     # image 字段保存 image 的主键 id
-    image = models.CharField(max_length=32, primary_key=True)
-    label = models.CharField(max_length=64)
+    image = models.CharField(max_length=32)
+    label = models.CharField(max_length=64, db_index=True)
 
 
 class Video(models.Model):
@@ -41,13 +41,13 @@ class Video(models.Model):
 
     path = models.FileField()
     size = models.IntegerField()
-    store = models.DateTimeField(auto_now=True)
+    time = models.DateTimeField(auto_now=True)
 
     marker = models.FileField()
-    dataset = models.CharField(max_length=64)
+    dataset = models.CharField(max_length=64, db_index=True)
 
 
 class VideoLabel(models.Model):
 
-    video = models.CharField(max_length=32, primary_key=True)
-    label = models.CharField(max_length=64)
+    video = models.CharField(max_length=32)
+    label = models.CharField(max_length=64, db_index=True)
