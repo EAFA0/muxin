@@ -18,28 +18,36 @@ class Image(models.Model):
 
     md5 = models.CharField(max_length=32, primary_key=True)
 
-    path = models.FileField()
+    path = models.CharField(max_length=512)
     size = models.IntegerField()
     time = models.DateTimeField(auto_now=True)
 
     width = models.IntegerField()
     height = models.IntegerField()
 
-    marker = models.FileField()
+    marker = models.FileField(null=True)
     dataset = models.CharField(max_length=64, db_index=True)
 
 
 class ImageLabel(models.Model):
     # image 字段保存 image 的主键 id
-    image = models.CharField(max_length=32)
+    image = models.ForeignKey(Image, models.CASCADE, to_field='md5',
+                              related_name='labels', related_query_name='label')
     label = models.CharField(max_length=64, db_index=True)
+
+    # class Meta:
+        # unique_together = ('image', 'label')
+        # ordering = ['label']
+
+    def __unicode__(self):
+        return self.label
 
 
 class Video(models.Model):
 
-    sid = models.CharField(max_length=32, primary_key=True)
+    vid = models.CharField(max_length=32, primary_key=True)
 
-    path = models.FileField()
+    path = models.CharField(max_length=512)
     size = models.IntegerField()
     time = models.DateTimeField(auto_now=True)
 
@@ -49,5 +57,9 @@ class Video(models.Model):
 
 class VideoLabel(models.Model):
 
-    video = models.CharField(max_length=32)
+    video = models.ForeignKey(Video, models.CASCADE,
+                              related_name='labels', related_query_name='label')
     label = models.CharField(max_length=64, db_index=True)
+
+    def __unicode__(self):
+        return self.label
