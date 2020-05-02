@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dataset.apps.DatasetConfig',
+    'spider.apps.SpiderConfig',
 ]
 
 MIDDLEWARE = [
@@ -120,3 +121,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CRAWLER_URL = 'http://localhost:6800/'
