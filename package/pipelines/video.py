@@ -182,6 +182,11 @@ class VideosPipeline(FilesPipeline):
 
         return downloder.download_request(request, spider)
 
+    def media_downloaded(self, response, request, info):
+        # 在此提取已下载视频文件的信息
+        result = super().media_downloaded(response, request, info)
+        return result
+
     def file_downloaded(self, response, request, info):
         return self.video_downloaded(response, request, info)
 
