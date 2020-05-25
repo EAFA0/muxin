@@ -22,9 +22,6 @@ class Image(models.Model):
     size = models.IntegerField()
     time = models.DateTimeField(auto_now=True)
 
-    width = models.IntegerField()
-    height = models.IntegerField()
-
     marker = models.FileField(null=True)
     dataset = models.CharField(max_length=64, db_index=True)
 
