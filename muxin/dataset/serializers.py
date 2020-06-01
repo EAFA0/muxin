@@ -1,83 +1,51 @@
 from rest_framework import serializers
 from .models import *
 
-__all__ = ['DataSetSerializer', 'ImageSerializer', 'VideoSerializer',
-           'ImageLabelSerializer', 'VideoLabelSerializer']
+__all__ = ['DataSetSerializer', 'DataSerializer', 'LabelSerializer']
 
 
 class DataSetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DataSet
-        fields = ['id', 'name', 'type', 'create', 'modify']
+        fields = ['name', 'type', 'create', 'modify']
 
 
-class ImageLabelSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = ImageLabel
-        fields = ['label']
-
-
-class ImageSerializer(serializers.ModelSerializer):
-
-    labels = ImageLabelSerializer(many=True)
+class DataSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Image
-        fields = ['md5', 'path', 'size', 'time', 'labels',
-                  'width', 'height', 'marker', 'dataset']
+        model = Data
+        fields = ['md5', 'path', 'size', 'time', 'marker']
 
     def create(self, validated_data):
-        labels_data = validated_data.pop('labels')
-        image = Image.objects.create(**validated_data)
-        for label_data in labels_data:
-            ImageLabel.objects.create(image=image, **label_data)
-        return image
+        # 标签是一个列表字段
+        labels = validated_data.pop('labels')
+        # 数据集名字和描述信息一块传递
+        dataset = validated_data.pop('dataset')
+        data = Data.objects.create(**validated_data)
 
+        # 创建标签数据
+        for label in labels:
+            Label.objects.create(dataset=dataset, label=label)
+        return data
+
+    # 该函数似乎还没有完成，历史有点久远不是很清楚
     def update(self, instance, validated_data):
+        dataset = validated_data.pop('dataset')
         if 'labels' in validated_data:
-            labels_data = validated_data.pop('labels')
+            labels = validated_data.pop('labels')
         else:
-            labels_data = {}
+            labels = {}
 
         instance = super().update(instance, validated_data)
-        for label_data in labels_data:
-            ImageLabel.objects.update_or_create(image=instance, **label_data)
+        for label in labels:
+            Label.objects.update_or_create(dataset=dataset, label=label)
         return instance
 
 
-class VideoLabelSerializer(serializers.ModelSerializer):
+class LabelSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = VideoLabel
-        fields = ['label']
-
-
-class VideoSerializer(serializers.ModelSerializer):
-
-    labels = VideoLabelSerializer(many=True)
-
-    class Meta:
-
-        model = Video
-        fields = ['vid', 'path', 'size', 'time', 'labels',
-                  'marker', 'dataset']
-
-    def create(self, validated_data):
-        labels_data = validated_data.pop('labels')
-        video = Video.objects.create(**validated_data)
-        for label_data in labels_data:
-            VideoLabel.objects.create(video=video, **label_data)
-        return video
-
-    def update(self, instance, validated_data):
-        if 'labels' in validated_data:
-            labels_data = validated_data.pop('labels')
-        else:
-            labels_data = {}
-
-        instance = super().update(instance, validated_data)
-        for label_data in labels_data:
-            VideoLabel.objects.update_or_create(video=instance, **label_data)
-        return instance
+        model = Label
+        fields = ['dataset', 'label']

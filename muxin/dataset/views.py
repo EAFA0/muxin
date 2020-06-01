@@ -11,21 +11,22 @@ from .models import *
 # Create your views here.
 
 
-class DataSetView(generics.RetrieveUpdateAPIView):
+class DataSetAPIView(generics.RetrieveUpdateAPIView,
+                    generics.ListCreateAPIView):
 
     '''
     对 dataset 的本体进行增删改查操作, 暂无权限检查, 待重构
     '''
 
-    def get(self, request, *args,pk = None, **kwargs):
-        if pk is None:
-            return generics.ListAPIView.get(self, request, *args, **kwargs)
-        else:
+    def get(self, request, *args, **kwargs):
+        if 'name' in kwargs:
             return super().get(request, *args, **kwargs)
+        else:
+            return generics.ListAPIView.get(self, request, *args, **kwargs)
 
+    lookup_field = 'name'
     queryset = DataSet.objects.all()
     serializer_class = DataSetSerializer
-
 
 class DataSetFileView(APIView):
 

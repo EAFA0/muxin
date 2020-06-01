@@ -3,13 +3,12 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from . import views
 
 urlpatterns = [
-    path('', views.DataSetView.as_view()),
-    path('dataset',views.DataSetView.as_view()),
-    path('<int:pk>/', views.DataSetView.as_view()),
+    path('', views.DataSetAPIView.as_view()),
+    path('<name>/', views.DataSetAPIView.as_view()),
 
-    path('<int:dataset_id>/file/',
+    path('<name>/file/',
          views.DataSetFileView.as_view()),
-    path('<int:dataset_id>/file/<pk>/',
+    path('<name>/file/<pk>/',
          views.DataSetFileView.as_view()),
 ]
 
