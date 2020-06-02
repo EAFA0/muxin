@@ -6,33 +6,17 @@ from .models import Task, Spider
 from muxin.settings import CRAWLER_URL
 
 
-__all__ = ['TaskSerializer']
-
-
-class TaskSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Task
-        fields = ['name', 'args', 'last', 'create']
-
-
 class SpiderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Spider
-        fields = ['id', 'task', 'status', 'spider', 'project']
+        fields = ['id', 'name', 'project']
 
 
-    def create(self, validated_data):
-        args_list = ['name', 'args']
-        args = json.loads(validated_data['args'])
+class TaskSerializer(serializers.ModelSerializer):
 
-        spiders = args['spiders']
-        files = args['files']
-        for filename in files:
-            breakpoint()
+    spiders = SpiderSerializer(read_only=True, many=True)
 
-
-
-        task = Task.objects.create(**validated_data)
-        return task
+    class Meta:
+        model = Task
+        fields = ['name', 'config', 'dataset', 'last', 'create', 'spiders']
