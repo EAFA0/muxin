@@ -8,8 +8,9 @@ from .serializers import TaskSerializer, SpiderSerializer
 from .models import Task, Spider
 
 from package.utils import config
+from muxin.settings import CRAWLER_URL
 
-scrapyd = ScrapydAPI('http://localhost:6800')
+scrapyd = ScrapydAPI(CRAWLER_URL)
 
 
 class TaskAPI:

@@ -17,3 +17,6 @@ def loads(config_str):
                 raise ValueError(f"Crawler config is missing the {field} field.")
 
     return task_config
+
+def dumps(config):
+    return yaml.safe_dump(config)
