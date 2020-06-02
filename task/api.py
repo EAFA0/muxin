@@ -16,19 +16,17 @@ scrapyd = ScrapydAPI(CRAWLER_URL)
 class TaskAPI:
 
     @classmethod
-    def create(cls, task_info: dict) -> Task:
-        _task_info = task_info.copy()
-        # 清除 spider 数据
-        if 'spiders' in _task_info:
-            _task_info.pop('spiders')
-
+    def create(cls, config_file) -> Task:
+        task_config = config.load(config_file)
         # 创建本地文件
-        _task_info['config'] = File(
-            StringIO(config.dumps(task_info)),
-            name=f"{task_info['name']}.yaml"
-        )
+        task_config['config'] = File(
+            config_file, name=f"{task_config['name']}.yaml")
 
-        task = TaskSerializer(data=_task_info)
+        # 清除 spider 数据
+        if 'spiders' in task_config:
+            task_config.pop('spiders')
+
+        task = TaskSerializer(data=task_config)
 
         if task.is_valid():
             return task.save()
@@ -43,7 +41,7 @@ class TaskAPI:
         task = get_object_or_404(Task, pk=name)
 
         config_str = task.config.open(mode='r').read()
-        task_config = config.loads(config_str)
+        task_config = config.load(config_str)
 
         for spider_config in task_config['spiders']:
             SpiderAPI.create(task, spider_config)

@@ -4,58 +4,35 @@ from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-
 from .models import Task, Spider
 from .serializers import TaskSerializer, SpiderSerializer
-# Create your views here.
+from .api import TaskAPI, SpiderAPI
 
 
-class TaskView(generics.RetrieveUpdateDestroyAPIView):
+class TaskRetrieveAPIView(generics.RetrieveAPIView):
+
+    lookup_field = 'name'
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+class TaskListCreateAPIView(generics.ListAPIView):
 
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
-    def get(self, request, pk: str = None, *args,  **kwargs):
-        if pk is None:
-            return generics.ListCreateAPIView(self, request, *args, **kwargs)
-        else:
-            return super().get(request, pk, *args, **kwargs)
+    def post(self, request, format=None):
+        config_str = request.data['config']
 
+        task = TaskAPI.create(config_str)
+        task_str = TaskSerializer(instance=task).data
+        return Response(task_str, status=status.HTTP_201_CREATED)
 
+class TaskScheduleAPIView(APIView):
 
-# class TaskView(APIView):
-
-#     def get(self, request, task: str = None, format=None):
-#         '''
-#         获取一个 Task 的信息
-#         '''
-#         if task is not None:
-#             obj = get_object_or_404(Task, name=task)
-#             ser = TaskSerializer(obj)
-
-#             return Response(ser.data)
-#         else:
-#             return Response('')
-
-#     def post(self, request, task: str = None, format=None):
-#         '''
-#         新建一个 Task
-#         '''
-#         ser = TaskSerializer(data=request.data)
-
-#         if ser.is_valid():
-#             ser.save()
-#             return Response(ser.data, status=status.HTTP_201_CREATED)
-#         else:
-#             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-#     def put(self, request, task: str = None, format=None):
-#         '''
-#         修改 Task 信息并重新拉起
-#         '''
-
-#     def delete(self, request, task: str = None, format=None):
-#         '''
-#         删除一个 Task, 并停止
-#         '''
+    def post(self, request, name: str, format=None):
+        TaskAPI.start(name)
+        return Response()
+    
+    def delete(self, request, name:str , format=None):
+        TaskAPI.cancel(name)
+        return Response()
