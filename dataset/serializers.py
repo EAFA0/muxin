@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from .models import *
-
-__all__ = ['DataSetSerializer', 'DataSerializer', 'LabelSerializer']
+from .models import DataSet, Data, Label
 
 
 class DataSetSerializer(serializers.ModelSerializer):

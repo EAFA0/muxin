@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dataset.apps.DatasetConfig',
-    'spider.apps.SpiderConfig',
+    'task.apps.TaskConfig',
 ]
 
 MIDDLEWARE = [
