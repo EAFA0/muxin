@@ -18,7 +18,6 @@ class Data(models.Model):
     md5 = models.CharField(max_length=32, primary_key=True)
 
     path = models.CharField(max_length=512)
-    size = models.IntegerField()
     time = models.DateTimeField(auto_now=True)
 
     marker = models.FileField(null=True)
