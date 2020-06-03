@@ -10,7 +10,7 @@ class SpiderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Spider
-        fields = ['id', 'name', 'project']
+        fields = ['id', 'name', 'task', 'project']
 
 
 class TaskSerializer(serializers.ModelSerializer):

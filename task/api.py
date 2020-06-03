@@ -86,18 +86,20 @@ class SpiderAPI:
         if 'name' not in spider_config or \
                 'project' not in spider_config:
             raise ValueError("name 字段和 project 字段缺失")
-        spider_config['spider'] = spider_config.pop('name')
-    
 
+        # 兼容 scrapyd 接口
+        spider_config['spider'] = spider_config.pop('name')
         # 将一个爬虫加入启动队列
         spider_config['id'] = scrapyd.schedule(
             dataset=task.dataset, **spider_config)
+        spider_config['name'] = spider_config.pop('spider')
 
+        # 建立 spider 和 task 的关联
+        spider_config['task'] = task.name
         spider_ser = SpiderSerializer(data=spider_config)
         if spider_ser.is_valid():
             spider_obj = spider_ser.save()
             # 建立 spider 和 task 之间的关联
-            task.spiders.add(spider_obj)
             return spider_obj
         else:
             raise ValueError(spider_ser.errors)
