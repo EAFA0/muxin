@@ -1,13 +1,30 @@
-from scrapy import Spider
+class FilesInfoPipeline:
 
+    DEFAULT_URLS_FIELD = 'file_urls'
+    DEFAULT_RESULTS_FIELD = 'files'
 
-class BaseInfoPipeline:
+    DEFAULT_LABELS_FIELD = 'tags'
+
+    def __init__(self, settings=None):
+
+        self.urls_field = settings.get(
+            'FILES_URLS_FIELD',
+            self.DEFAULT_URLS_FIELD
+        )
+        self.labels_filed = settings.get(
+            'LABELS_FIELD',
+            self.DEFAULT_LABELS_FIELD
+        )
+        self.results_field = settings.get(
+            'FILES_RESULTS_FIELD',
+            self.DEFAULT_RESULTS_FIELD
+        )
 
     @classmethod
     def from_settings(cls, settings):
         return cls(settings=settings)
 
-    def process_item(self, item, spider: Spider) -> list:
+    def process_item(self, item, spider) -> list:
         if isinstance(item, list):
             return [self.item_to_info(obj, spider) for obj in item]
         elif isinstance(item, dict):
@@ -16,64 +33,33 @@ class BaseInfoPipeline:
             raise TypeError("item should be list or dict")
 
     def item_to_info(self, item: dict, spider) -> dict:
-        raise NotImplementedError()
+        # url 信息和 result 中的 url 信息重复
+        item.pop(self.urls_field)
 
-class ImagesInfoPipeline(BaseInfoPipeline):
+        labels = item.pop(self.labels_filed)
+        results = item.pop(self.results_field)
 
-    DEFAULT_IMAGES_URLS_FIELD = 'image_urls'
-    DEFAULT_IMAGES_RESULT_FIELD = 'images'
+        return [self.result_to_info(result, item, labels)
+                for result in results]
 
-    DEFAULT_LABELS_FIELD = 'tags'
+    def result_to_info(self, result, item, labels):
+        info = dict()
+        info['path'] = result['path']
 
-    def __init__(self, settings=None):
+        info['source'] = result['url']
+        info['md5'] = result['checksum']
 
-        self.images_urls_field = settings.get(
-            'IMAGES_URLS_FIELD',
-            self.DEFAULT_IMAGES_URLS_FIELD
-        )
-        self.images_result_field = settings.get(
-            'IMAGES_RESULT_FIELD',
-            self.DEFAULT_IMAGES_RESULT_FIELD
-        )
-        self.labels_filed = settings.get(
-            'DEFAULT_LABELS_FIELD',
-            self.DEFAULT_LABELS_FIELD
-        )
+        info['labels'] = labels.copy()
+        return info
 
 
-    def item_to_info(self, item, spider):
-        labels: list = item[self.labels_filed]
-        labels.append(spider.name)
-        
-        return [result.update(labels = labels) or result
-                for result in item[self.images_result_field]]
+class ImagesInfoPipeline(FilesInfoPipeline):
+
+    DEFAULT_URLS_FIELD = 'image_urls'
+    DEFAULT_RESULTS_FIELD = 'images'
 
 
-class VideosInfoPipeline(BaseInfoPipeline):
+class VideosInfoPipeline(FilesInfoPipeline):
 
-    DEFAULT_VIDEOS_URLS_FIELD = 'video_urls'
-    DEFAULT_VIDEOS_RESULT_FIELD = 'videos'
-
-    DEFAULT_LABELS_FIELD = 'tags'
-
-    def __init__(self, settings=None):
-
-        self.videos_urls_field = settings.get(
-            'VIDEOS_URLS_FIELD',
-            self.DEFAULT_VIDEOS_URLS_FIELD
-        )
-        self.videos_result_field = settings.get(
-            'VIDEOS_RESULT_FIELD',
-            self.DEFAULT_VIDEOS_RESULT_FIELD
-        )
-        self.labels_filed = settings.get(
-            'DEFAULT_LABELS_FIELD',
-            self.DEFAULT_LABELS_FIELD
-        )
-
-    def item_to_info(self, item, spider):
-        labels: list = item[self.labels_filed]
-        labels.append(spider.name)
-
-        return [result.update(labels = labels) or result
-                for result in item[self.videos_result_field]]
+    DEFAULT_URLS_FIELD = 'video_urls'
+    DEFAULT_RESULTS_FIELD = 'videos'
