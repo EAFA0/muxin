@@ -24,6 +24,7 @@ class DataSetCreateListAPIView(generics.ListCreateAPIView):
     queryset = DataSet.objects.all()
     serializer_class = DataSetSerializer
 
+
 class DataAPIView(APIView):
 
     datas = Data.objects.all()
@@ -115,6 +116,7 @@ class DataAPIView(APIView):
         return self._get_datas_and_labels(
             dataset=dataset.name, pk=pk, labels=labels)
 
+
 class DataCreateListAPIView(DataAPIView):
 
     def get(self, request, name, format=None):
@@ -124,26 +126,29 @@ class DataCreateListAPIView(DataAPIView):
 
         json_obj = self.serialized_datas(datas, labels_dict)
         return Response(json_obj)
-        
 
-    def post(self, request, name, pk=None, format=None):
+    def post(self, request, name, format=None):
         '''
         dataset 新增一个文件描述
         '''
         # 检查数据集是否存在
         get_object_or_404(DataSet, pk=name)
 
-        data_dict = dict(request.data)
+        _data = request.data
+        if isinstance(_data, list):
+            datas = _data
+        elif isinstance(_data, dict):
+            datas = list(_data)
 
         try:
-            self.create_data(data_dict)
+            for data_dict in datas:
+                self.create_data(data_dict)
         except ValueError as err:
             return Response(str(err), status=status.HTTP_400_BAD_REQUEST)
         except Exception as err:
             return Response(str(err), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            return Response(data_dict, status=status.HTTP_201_CREATED)
-
+            return Response(datas, status=status.HTTP_201_CREATED)
 
 
 class DataRetrieveUpdateAPIView(DataAPIView):
@@ -152,9 +157,9 @@ class DataRetrieveUpdateAPIView(DataAPIView):
         # 查询 data 和 labels 对象
         datas, labels_dict = self.get_datas_and_labels_dict(
             request.GET, name, pk, format=format)
-        
+
         # 从查询结果列表中取出第一个查询结果
         json_objs = self.serialized_datas(datas, labels_dict)
         json_obj = json_objs[0] if len(json_objs) > 0 else {}
-        
+
         return Response(json_obj)
