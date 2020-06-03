@@ -59,9 +59,12 @@ class DataAPIView(APIView):
         data_pks = [label.data for label in label_objs]
         return self.datas.filter(pk__in=data_pks), labels_dict
 
-    def create_data(self, data_json: dict):
+    def create_data(self, dataset, data_json: dict):
         labels = data_json['labels'] \
-            if 'labels' in data_json else dict()
+            if 'labels' in data_json else list()
+        
+        if not isinstance(labels, list):
+            raise TypeError('labels should be a list.')
 
         # 保存 data 部分数据
         data_ser = DataSerializer(data=data_json)
@@ -72,8 +75,12 @@ class DataAPIView(APIView):
 
         # 保存 labels 数据, 并建立 data 和 label 之间的连接
         for label in labels:
-            label['data'] = data_json['md5']
-            label_ser = LabelSerializer(data=label)
+            label_info = dict(
+                label=label,
+                dataset=dataset.name,
+                data=data_json['md5'])
+            
+            label_ser = LabelSerializer(data=label_info)
             if label_ser.is_valid():
                 label_ser.save()
             else:
@@ -132,7 +139,7 @@ class DataCreateListAPIView(DataAPIView):
         dataset 新增一个文件描述
         '''
         # 检查数据集是否存在
-        get_object_or_404(DataSet, pk=name)
+        dataset = get_object_or_404(DataSet, pk=name)
 
         _data = request.data
         if isinstance(_data, list):
@@ -142,7 +149,7 @@ class DataCreateListAPIView(DataAPIView):
 
         try:
             for data_dict in datas:
-                self.create_data(data_dict)
+                self.create_data(dataset, data_dict)
         except ValueError as err:
             return Response(str(err), status=status.HTTP_400_BAD_REQUEST)
         except Exception as err:
