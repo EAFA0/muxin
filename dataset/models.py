@@ -22,6 +22,7 @@ class Data(models.Model):
     time = models.DateTimeField(auto_now=True)
 
     marker = models.FileField(null=True)
+    source = models.CharField(max_length=512)
 
 
 class Label(models.Model):

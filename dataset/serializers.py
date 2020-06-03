@@ -13,7 +13,7 @@ class DataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Data
-        fields = ['md5', 'path', 'size', 'time', 'marker']
+        fields = ['md5', 'path', 'size', 'time', 'marker', 'source']
 
 
 class LabelSerializer(serializers.ModelSerializer):
