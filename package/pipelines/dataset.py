@@ -27,7 +27,7 @@ class DataSetPipeline:
     def upload_to_dataset(self, dataset, infos: list):
         target_url = f"{self.target}/{dataset}/file/"
         defer = threads.deferToThread(
-            requests.post, target_url, json=infos)
+            requests.put, target_url, json=infos)
         
         defer.addCallback(self.upload_success)
         defer.addErrback(self.upload_failed)
