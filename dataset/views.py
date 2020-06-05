@@ -113,10 +113,8 @@ class DataAPIView(APIView):
     def _serialized(self, data, labels):
         # 序列化 data, labels 对象
         data_json = DataSerializer(instance=data).data
-        labels = [LabelSerializer(instance=label).data
-                       for label in labels]
-
-        labels_json = [label['label'] for label in labels]
+        labels_json = [LabelSerializer(instance=label).data
+                  for label in labels]
 
         # 合并 data, labels 的 json 字符串
         data_json['labels'] = labels_json
@@ -157,13 +155,16 @@ class DataCreateListAPIView(DataAPIView):
         datas, labels_dict = self.get_datas_and_labels_dict(
             request.GET, name, None, format=format)
 
-        json_obj = self.serialized_datas(datas, labels_dict)
-        return Response(json_obj)
+        json_objs = self.serialized_datas(datas, labels_dict)
 
-    def post(self, request, name, format=None):
-        '''
-        dataset 新增一个文件描述
-        '''
+        # 仅保留 label 字段, 剔除其它额外字段
+        for json_obj in json_objs:
+            labels = [label['label'] for label in json_obj.pop('labels')]
+            json_obj['labels'] = labels
+
+        return Response(json_objs)
+
+    def put(self, request, name, format=None):
         # 检查数据集是否存在
         dataset = get_object_or_404(DataSet, pk=name)
 
@@ -171,7 +172,7 @@ class DataCreateListAPIView(DataAPIView):
         if isinstance(_data, list):
             datas = _data
         elif isinstance(_data, dict):
-            datas = list(_data)
+            datas = [_data]
 
         try:
             for data_dict in datas:
