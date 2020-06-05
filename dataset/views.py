@@ -34,6 +34,11 @@ class DataAPIView(APIView):
         返回的数据结构:
         data :  [Datas]
         labels: {data.md5: [Labels]}
+
+        指定 pk :
+            返回该 data 的所有标签信息(包括不同数据集)
+        未指定 pk:
+            dataset 为必须字段, labels 为空时返回该文件在 dataset 中的所有标签信息
         '''
 
         if pk is not None:
@@ -42,11 +47,18 @@ class DataAPIView(APIView):
             return [data], {data.md5: labels}
 
         if dataset is None:
-            raise ValueError("dataset is None")
+            raise ValueError("dataset is required.")
 
         if labels is None:
             label_objs = Label.objects.filter(dataset=dataset)
         else:
+            if not isinstance(labels, list):
+                raise TypeError("labels should be a list of str.")
+            else:
+                for label in labels:
+                    if not isinstance(label, str):
+                        raise TypeError(f"The object of the labels list should be str, get a {type(label)}")
+
             label_objs = Label.objects.filter(
                 dataset=dataset, label__in=labels)
 
