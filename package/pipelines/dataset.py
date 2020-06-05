@@ -4,12 +4,14 @@ import requests
 from io import BytesIO
 from twisted.internet import threads
 
+from config import DATASET_SERVER
+
 
 class DataSetPipeline:
 
     def __init__(self, settings):
         self.project_name = settings['BOT_NAME']
-        self.target = settings["DATASET_ENDPOINT"]
+        self.target = DATASET_SERVER
 
         if self.target is None:
             raise ValueError("the settings of DATASET_ENDPOINT is None.")
@@ -28,7 +30,7 @@ class DataSetPipeline:
         target_url = f"{self.target}/{dataset}/file/"
         defer = threads.deferToThread(
             requests.put, target_url, json=infos)
-        
+
         defer.addCallback(self.upload_success)
         defer.addErrback(self.upload_failed)
         return defer

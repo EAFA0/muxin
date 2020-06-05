@@ -3,7 +3,6 @@ from scrapyd_api import ScrapydAPI
 from rest_framework import serializers
 
 from .models import Task, Spider
-from muxin.settings import CRAWLER_URL
 
 
 class SpiderSerializer(serializers.ModelSerializer):

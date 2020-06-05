@@ -1,0 +1,11 @@
+SCRAPYD_PORT = 6800
+DJANGO_PORT = 8000
+
+MYSQL_HOST = '127.0.0.1'
+MYSQL_PORT = 3306
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = 'EAFA0@TobiichiOrigami'
+MYSQL_DATABASE = 'muxin'
+
+SCRAPYD_SERVER = f"http://localhost:{SCRAPYD_PORT}"
+DATASET_SERVER = f"http://localhost:{DJANGO_PORT}/dataset"
