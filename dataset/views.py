@@ -2,6 +2,7 @@ import json
 import itertools
 
 from django.shortcuts import get_object_or_404
+from django.http.response import Http404
 
 from rest_framework import status, generics
 from rest_framework.views import APIView
@@ -73,8 +74,11 @@ class DataAPIView(APIView):
 
     def create_or_update_data(self, dataset, data_json: dict):
         # 查看数据是否已经存在于数据库中
-        _data, _labels_dict = self._get_datas_and_labels(
-            pk=data_json['md5'], dataset=dataset)
+        try:
+            _data, _labels_dict = self._get_datas_and_labels(
+                pk=data_json['md5'], dataset=dataset)
+        except Http404:
+            _data, _labels_dict = [], []
 
         # 筛选出需要更新的数据
         if len(_data) > 0:
