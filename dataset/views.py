@@ -38,8 +38,8 @@ class DataAPIView(APIView):
 
         if pk is not None:
             data = get_object_or_404(Data, pk=pk)
-            label = get_object_or_404(Label, data=data.md5)
-            return [data], {data.md5: [label]}
+            labels = Label.objects.filter(data=data.md5)
+            return [data], {data.md5: labels}
 
         if dataset is None:
             raise ValueError("dataset is None")
@@ -89,11 +89,13 @@ class DataAPIView(APIView):
     def _serialized(self, data, labels):
         # 序列化 data, labels 对象
         data_json = DataSerializer(instance=data).data
-        label_jsons = [LabelSerializer(instance=label).data
+        labels = [LabelSerializer(instance=label).data
                        for label in labels]
 
+        labels_json = [label['label'] for label in labels]
+
         # 合并 data, labels 的 json 字符串
-        data_json['labels'] = label_jsons
+        data_json['labels'] = labels_json
         return data_json
 
     def serialized_datas(self, datas, labels_dict) -> json:
