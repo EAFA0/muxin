@@ -71,27 +71,39 @@ class DataAPIView(APIView):
         data_pks = [label.data for label in label_objs]
         return self.datas.filter(pk__in=data_pks), labels_dict
 
-    def create_data(self, dataset, data_json: dict):
-        labels = data_json['labels'] \
-            if 'labels' in data_json else list()
-        
-        if not isinstance(labels, list):
-            raise TypeError('labels should be a list.')
+    def create_or_update_data(self, dataset, data_json: dict):
+        # 查看数据是否已经存在于数据库中
+        _data, _labels_dict = self._get_datas_and_labels(
+            pk=data_json['md5'], dataset=dataset)
+
+        # 筛选出需要更新的数据
+        if len(_data) > 0:
+            existed_data = _data[0]
+            _existed_data_labels = _labels_dict[existed_data.md5]
+            existed_data_labels = [label.label for label
+                                   in _existed_data_labels]
+        else:
+            existed_data = None
+            existed_data_labels = []
+
+        labels = data_json['labels'] if 'labels' in data_json else list()
+        insert_labels = set(labels).symmetric_difference(existed_data_labels)
 
         # 保存 data 部分数据
-        data_ser = DataSerializer(data=data_json)
+        data_ser = DataSerializer(existed_data, data=data_json)
+
         if data_ser.is_valid():
             data_ser.save()
         else:
             raise ValueError(data_ser.errors)
 
         # 保存 labels 数据, 并建立 data 和 label 之间的连接
-        for label in labels:
+        for label in insert_labels:
             label_info = dict(
                 label=label,
                 dataset=dataset.name,
                 data=data_json['md5'])
-            
+
             label_ser = LabelSerializer(data=label_info)
             if label_ser.is_valid():
                 label_ser.save()
@@ -163,7 +175,7 @@ class DataCreateListAPIView(DataAPIView):
 
         try:
             for data_dict in datas:
-                self.create_data(dataset, data_dict)
+                self.create_or_update_data(dataset, data_dict)
         except ValueError as err:
             return Response(str(err), status=status.HTTP_400_BAD_REQUEST)
         except Exception as err:
