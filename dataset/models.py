@@ -22,6 +22,7 @@ class Data(models.Model):
 
     marker = models.FileField(null=True)
     source = models.CharField(max_length=512)
+    crawler = models.CharField(max_length=64)
 
 
 class Label(models.Model):

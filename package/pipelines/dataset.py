@@ -8,6 +8,7 @@ from twisted.internet import threads
 class DataSetPipeline:
 
     def __init__(self, settings):
+        self.project_name = settings['BOT_NAME']
         self.target = settings["DATASET_ENDPOINT"]
 
         if self.target is None:
@@ -18,6 +19,9 @@ class DataSetPipeline:
         return cls(settings)
 
     def process_item(self, infos, spider):
+        for info in infos:
+            info['crawler'] = f"{self.project_name}/{spider.name}"
+
         return self.upload_to_dataset(spider.dataset, infos)
 
     def upload_to_dataset(self, dataset, infos: list):
