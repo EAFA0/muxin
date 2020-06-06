@@ -4,17 +4,14 @@ import requests
 from io import BytesIO
 from twisted.internet import threads
 
-from config import Config
+from config import get_config
 
 
 class DataSetPipeline:
 
     def __init__(self, settings):
         self.project_name = settings['BOT_NAME']
-        self.target = Config.DATASET_SERVER
-
-        if self.target is None:
-            raise ValueError("The configuration is not initialized.")
+        self.target = get_config().DATASET_SERVER
 
     @classmethod
     def from_settings(cls, settings):

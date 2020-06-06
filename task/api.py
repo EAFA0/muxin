@@ -8,9 +8,9 @@ from .serializers import TaskSerializer, SpiderSerializer
 from .models import Task, Spider
 
 from package.utils import task
-from config import Config
+from config import get_config
 
-scrapyd = ScrapydAPI(Config.SCRAPYD_SERVER)
+scrapyd = ScrapydAPI(get_config().SCRAPYD_SERVER)
 
 
 class TaskAPI:
@@ -26,12 +26,12 @@ class TaskAPI:
         if 'spiders' in task_config:
             task_config.pop('spiders')
 
-        task = TaskSerializer(data=task_config)
+        task_ser = TaskSerializer(data=task_config)
 
-        if task.is_valid():
-            return task.save()
+        if task_ser.is_valid():
+            return task_ser.save()
         else:
-            raise ValueError(task.errors)
+            raise ValueError(task_ser.errors)
 
     @classmethod
     def start(cls, name: str):

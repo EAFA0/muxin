@@ -2,8 +2,6 @@ import yaml
 
 
 class Config:
-    inited = False
-
     DJANGO_PORT = None
     SCRAPYD_PORT = None
 
@@ -16,12 +14,14 @@ class Config:
     SCRAPYD_SERVER = None
     DATASET_SERVER = None
 
-    @classmethod
-    def init(cls, config_file_path):
-        if cls.inited:
-            return cls
+    instance = None
 
-        config = yaml.safe_load(config_file_path)
+    def __new__(cls, *arg, **kwargs):
+        if cls.instance:
+            return cls.instance
+        
+        with open('./config.yaml') as config_file:
+            config = yaml.safe_load(config_file)
 
         cls.DJANGO_PORT = config['django']['server_port']
         cls.SCRAPYD_PORT = config['scrapyd']['http_port']
@@ -35,5 +35,8 @@ class Config:
         cls.MYSQL_PASSWORD = mysql_config['password']
         cls.MYSQL_DATABASE = mysql_config['database']
 
-        cls.inited = True
-        return cls
+        cls.instance = object.__new__(cls, *arg, **kwargs)
+        return cls.instance
+
+def get_config():
+    return Config()
