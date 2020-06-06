@@ -1,7 +1,7 @@
 import yaml
 
 
-def load(config):
+def load_config(config):
     task_config = yaml.safe_load(config)
 
     task_fields = ['name', 'dataset', 'spiders']
@@ -18,5 +18,5 @@ def load(config):
 
     return task_config
 
-def dump(config):
+def dump_config(config):
     return yaml.safe_dump(config)

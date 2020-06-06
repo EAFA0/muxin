@@ -7,17 +7,17 @@ from scrapyd_api import ScrapydAPI
 from .serializers import TaskSerializer, SpiderSerializer
 from .models import Task, Spider
 
-from package.utils import config
-from config import SCRAPYD_SERVER
+from package.utils import task
+from config import Config
 
-scrapyd = ScrapydAPI(SCRAPYD_SERVER)
+scrapyd = ScrapydAPI(Config.SCRAPYD_SERVER)
 
 
 class TaskAPI:
 
     @classmethod
     def create(cls, config_file) -> Task:
-        task_config = config.load(config_file)
+        task_config = task.load_config(config_file)
         # 创建本地文件
         task_config['config'] = File(
             config_file, name=f"{task_config['name']}.yaml")
@@ -41,7 +41,7 @@ class TaskAPI:
         task = get_object_or_404(Task, pk=name)
 
         config_str = task.config.open(mode='r').read()
-        task_config = config.load(config_str)
+        task_config = task.load_config(config_str)
 
         for spider_config in task_config['spiders']:
             SpiderAPI.create(task, spider_config)
