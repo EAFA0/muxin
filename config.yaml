@@ -1,0 +1,19 @@
+scrapy:
+  projects:
+    video: video.settings
+    image: image.settings
+
+scrapyd:
+  http_port: 6800
+
+django:
+  server_port: 8000
+
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: password
+  database: database
+
+

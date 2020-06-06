@@ -65,8 +65,9 @@ COOKIES_ENABLED = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'package.pipelines.video.VideosPipeline': 1,
-#    'video.pipelines.VideoPipeline': 300,
+    'package.pipelines.video.VideosPipeline': 300,
+    'package.pipelines.info.VideosInfoPipeline': 400,
+    'package.pipelines.dataset.DataSetPipeline': 500,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
