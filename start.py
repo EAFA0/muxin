@@ -33,7 +33,7 @@ def start_scrapyd(scrapyd_config: dict):
         scrapyd_config_parser['scrapyd'] = scrapyd_config
         scrapyd_config_parser.write(scrapyd_config_file)
 
-    os.system('scrapyd &')
+    os.system('scrapyd -l ./logs/scrapyd.log &')
     os.remove('./scrapyd.conf')
 
 
