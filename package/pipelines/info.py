@@ -39,8 +39,13 @@ class FilesInfoPipeline:
         labels = item.pop(self.labels_filed)
         results = item.pop(self.results_field)
 
-        return [self.result_to_info(result, item, labels)
-                for result in results]
+        if isinstance(results, list):
+            return [self.result_to_info(result, item, labels)
+                    for result in results]
+        elif isinstance(results, dict):
+            return [self.result_to_info(results, item, labels)]
+        else:
+            raise TypeError(f"The results obj should be list / dict, get {type(results)}")
 
     def result_to_info(self, result, item, labels):
         info = dict()
@@ -61,5 +66,5 @@ class ImagesInfoPipeline(FilesInfoPipeline):
 
 class VideosInfoPipeline(FilesInfoPipeline):
 
-    DEFAULT_URLS_FIELD = 'video_urls'
-    DEFAULT_RESULTS_FIELD = 'videos'
+    DEFAULT_URLS_FIELD = 'video_url'
+    DEFAULT_RESULTS_FIELD = 'video'
