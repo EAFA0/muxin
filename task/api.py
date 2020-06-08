@@ -51,8 +51,8 @@ class TaskAPI:
     @classmethod
     def running_spiders(cls, name: str) -> set:
         task = get_object_or_404(Task, pk=name)
-        spiders = task.spiders
-
+        spiders = task.spiders.all()
+        
         runnings = SpiderAPI.running_spider_set().intersection(
             {spider.id for spider in spiders})
 
