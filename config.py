@@ -25,8 +25,8 @@ class Config:
 
         cls.DJANGO_PORT = config['django']['server_port']
         cls.SCRAPYD_PORT = config['scrapyd']['http_port']
-        cls.DATASET_SERVER = "http://localhost:{}".format(cls.DJANGO_PORT)
-        cls.SCRAPYD_SERVER = "http://localhost:{}/dataset".format(cls.SCRAPYD_PORT)
+        cls.DATASET_SERVER = "http://localhost:{}/dataset".format(cls.DJANGO_PORT)
+        cls.SCRAPYD_SERVER = "http://localhost:{}".format(cls.SCRAPYD_PORT)
 
         mysql_config = config['mysql']
         cls.MYSQL_HOST = mysql_config['host']
