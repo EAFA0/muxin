@@ -17,6 +17,8 @@ def scrapyd_init(scrapyd_server, scrapy_projects: dict):
             scrapy_config.write(scrapy_config_file)
         # deploy
         os.system('scrapyd-deploy')
+        # 清除项目打包缓存
+        os.remove('./setup.py')
 
     # 删除 scrapy 配置文件
     os.remove('./scrapy.cfg')
