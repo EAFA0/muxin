@@ -35,6 +35,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'rest_framework',
+    'django_apscheduler',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dataset.apps.DatasetConfig',
     'task.apps.TaskConfig',
+    'scheduler.apps.SchedulerConfig'
 ]
 
 MIDDLEWARE = [
@@ -129,6 +131,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+'''
 # Modified since https://github.com/cipriantarta/django-logging/issues/12
 LOGGING = {
     'version': 1,
@@ -167,3 +170,4 @@ LOGGING = {
         },
     }
 }
+'''

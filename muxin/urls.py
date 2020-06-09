@@ -21,4 +21,5 @@ urlpatterns = [
 
     path('task/', include('task.urls')),
     path('dataset/', include('dataset.urls')),
+    path('scheduler/', include('scheduler.urls'))
 ]
