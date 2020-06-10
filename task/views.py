@@ -31,8 +31,8 @@ class TaskScheduleAPIView(APIView):
 
     def post(self, request, name: str, format=None):
         TaskAPI.start(name)
-        return Response()
+        return Response(status=status.HTTP_201_CREATED)
     
     def delete(self, request, name:str , format=None):
         TaskAPI.cancel(name)
-        return Response()
+        return Response(status=status.HTTP_200_OK)
