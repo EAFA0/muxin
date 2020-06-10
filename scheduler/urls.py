@@ -4,8 +4,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from . import views
 
 urlpatterns = [
-    path('', views.SchedulerAPIView.as_view()),
-    path('<id>/', views.SchedulerAPIView.as_view()),
+    path('', views.SchedulerCreateListAPIView.as_view()),
+    path('<id>/', views.SchedulerRetrieveDeleteAPIView.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
